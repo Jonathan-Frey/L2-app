@@ -25,11 +25,15 @@ export class Player extends CollisionBody {
   #feetArea: Area;
   #leftArea: Area;
   #rightArea: Area;
+  #image: HTMLImageElement;
   constructor(position: Vector2D) {
     super(
       position,
       new RectangleCollisionShape(new Vector2D(-25, -25), 50, 50)
     );
+
+    this.#image = document.createElement('img');
+    this.#image.src = 'pngegg.png';
 
     this.getCollisionLayers().setLayer(2, true);
 
@@ -202,12 +206,10 @@ export class Player extends CollisionBody {
   }
 
   override render(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = this.#color;
-    ctx.fillRect(
+    ctx.drawImage(
+      this.#image,
       this.position.x - this.#width / 2,
-      this.position.y - this.#height / 2,
-      this.#width,
-      this.#height
+      this.position.y - this.#height / 2
     );
   }
 }

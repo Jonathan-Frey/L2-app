@@ -33,9 +33,6 @@ export class DisappearingPlatform extends Platform {
 
   #isPlayerOnPlatform(): boolean {
     const collidingBodies = this.#topArea.getCollidingBodies();
-    if (collidingBodies) {
-      console.log('collidingBodies:', collidingBodies);
-    }
     for (const body of collidingBodies) {
       if (body instanceof Player) {
         return true;
