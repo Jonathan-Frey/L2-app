@@ -206,10 +206,20 @@ export class Player extends CollisionBody {
   }
 
   override render(ctx: CanvasRenderingContext2D): void {
-    ctx.drawImage(
-      this.#image,
-      this.position.x - this.#width / 2,
-      this.position.y - this.#height / 2
-    );
+    ctx.save();
+
+    ctx.translate(this.position.x, this.position.y);
+
+    if (this.#wantToMoveRight()) {
+      ctx.scale(-1, 1);
+    } else if (this.#wantToMoveLeft()) {
+      ctx.scale(1, 1);
+    } else if (this.#velocity.x > 0) {
+      ctx.scale(-1, 1);
+    }
+
+    ctx.drawImage(this.#image, -this.#width / 2, -this.#height / 2);
+
+    ctx.restore();
   }
 }
