@@ -11,9 +11,9 @@ export class Platform extends StaticCollisionBody {
   constructor(
     position: Vector2D,
     width: number,
+    height: number,
     color: string | CanvasGradient | CanvasPattern
   ) {
-    const height = 25;
     super(
       position,
       new RectangleCollisionShape(

@@ -102,10 +102,10 @@ export class Player extends CollisionBody {
   }
 
   override process(delta: number): void {
+    console.log(delta);
     if (this.#bumpedHead()) {
       this.#velocity = new Vector2D(this.#velocity.x, 0);
     }
-
     if (!this.isGrounded()) {
       this.#applyGravity();
     } else {

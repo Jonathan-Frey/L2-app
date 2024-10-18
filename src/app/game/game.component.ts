@@ -12,16 +12,27 @@ import { Level1 } from './gameObjects/Level1';
         height: 80dvh;
       }
     </style>
-    <canvas #canvas width="1280" height="720"></canvas>`,
+    <canvas #canvas width="1280" height="720"></canvas>
+    <button (click)="startGame($event)">Start</button>`,
 })
 export class GameComponent {
   @ViewChild('canvas')
   canvas!: ElementRef<HTMLCanvasElement>;
+  gameEngine!: GameEngine;
 
   ngAfterViewInit() {
-    const gameEngine = new GameEngine(this.canvas.nativeElement, new Level1(), {
+    this.gameEngine = new GameEngine(this.canvas.nativeElement, new Level1(), {
       debug: true,
     });
-    gameEngine.start();
+  }
+
+  ngOnDestroy() {
+    this.gameEngine.stop();
+  }
+
+  startGame(event: MouseEvent) {
+    const clickedElement = event.target as HTMLElement;
+    clickedElement.remove();
+    this.gameEngine.start();
   }
 }
