@@ -9,6 +9,7 @@ import {
 } from 'jf-canvas-game-engine';
 
 import { gravity, maxFallSpeed } from './globalValues';
+import { Platform } from './Platform';
 
 export class Player extends CollisionBody {
   #width = 50;
@@ -21,6 +22,8 @@ export class Player extends CollisionBody {
   #velocity = new Vector2D(0, 0);
   #headArea: Area;
   #feetArea: Area;
+  #leftArea: Area;
+  #rightArea: Area;
   constructor(position: Vector2D) {
     super(
       position,
@@ -43,6 +46,20 @@ export class Player extends CollisionBody {
     );
 
     this.addChild(this.#feetArea);
+
+    this.#leftArea = new Area(
+      new Vector2D(-25, 0),
+      new RectangleCollisionShape(new Vector2D(0, -20), 5, 40)
+    );
+
+    this.addChild(this.#leftArea);
+
+    this.#rightArea = new Area(
+      new Vector2D(25, 0),
+      new RectangleCollisionShape(new Vector2D(-5, -20), 5, 40)
+    );
+
+    this.addChild(this.#rightArea);
   }
 
   isGrounded(): boolean {
@@ -101,8 +118,35 @@ export class Player extends CollisionBody {
     return bumpedHead;
   }
 
+  #bumbedLeft(): boolean {
+    const collidingBodies = this.#leftArea.getCollidingBodies();
+    let bumpedLeft = false;
+
+    collidingBodies.forEach((body) => {
+      if (body instanceof StaticCollisionBody) {
+        bumpedLeft = true;
+        return;
+      }
+    });
+
+    return bumpedLeft;
+  }
+
+  #bumpedRight(): boolean {
+    const collidingBodies = this.#rightArea.getCollidingBodies();
+    let bumpedRight = false;
+
+    collidingBodies.forEach((body) => {
+      if (body instanceof StaticCollisionBody) {
+        bumpedRight = true;
+        return;
+      }
+    });
+
+    return bumpedRight;
+  }
+
   override process(delta: number): void {
-    console.log(delta);
     if (this.#bumpedHead()) {
       this.#velocity = new Vector2D(this.#velocity.x, 0);
     }
@@ -110,6 +154,14 @@ export class Player extends CollisionBody {
       this.#applyGravity();
     } else {
       this.#velocity = new Vector2D(this.#velocity.x, 0);
+    }
+
+    if (this.#bumbedLeft() && this.#velocity.x < 0) {
+      this.#velocity = new Vector2D(0, this.#velocity.y);
+    }
+
+    if (this.#bumpedRight() && this.#velocity.x > 0) {
+      this.#velocity = new Vector2D(0, this.#velocity.y);
     }
 
     if (this.#wantToMoveLeft()) {
@@ -137,11 +189,16 @@ export class Player extends CollisionBody {
     }
 
     this.position = this.position.add(this.#velocity.multiply(delta));
-    delta > 0 &&
-      (this.#velocity = new Vector2D(
-        Math.floor(this.#velocity.x * 0.99),
+    if (delta > 0) {
+      const decayFactor = Math.exp(-Math.log(2) * delta);
+      this.#velocity = new Vector2D(
+        this.#velocity.x * decayFactor,
         this.#velocity.y
-      ));
+      );
+      if (Math.abs(this.#velocity.x) < 1) {
+        this.#velocity = new Vector2D(0, this.#velocity.y);
+      }
+    }
   }
 
   override render(ctx: CanvasRenderingContext2D): void {

@@ -4,7 +4,7 @@ import { Platform } from './Platform';
 import { DebugCamera } from './DebugCamera';
 
 export class Level1 extends GameObject {
-  #player = new Player(new Vector2D(200, -925));
+  #player = new Player(new Vector2D(200, -2225));
   constructor() {
     super(new Vector2D(0, 0));
     // this.addChild(new DebugCamera(new Vector2D(0, 0)));
