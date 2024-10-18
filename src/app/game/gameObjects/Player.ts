@@ -2,6 +2,7 @@ import {
   Area,
   Camera,
   CollisionBody,
+  CollisionLayers,
   GameContext,
   RectangleCollisionShape,
   StaticCollisionBody,
@@ -15,8 +16,8 @@ export class Player extends CollisionBody {
   #width = 50;
   #height = 50;
   #color = 'green';
-  #jumpForce = 1500;
-  #moveSpeed = 20;
+  #jumpForce = 1600;
+  #moveAcceleration = 1000;
   #maxMoveSpeed = 500;
   #camera = new Camera(new Vector2D(0, 0));
   #velocity = new Vector2D(0, 0);
@@ -29,6 +30,8 @@ export class Player extends CollisionBody {
       position,
       new RectangleCollisionShape(new Vector2D(-25, -25), 50, 50)
     );
+
+    this.getCollisionLayers().setLayer(2, true);
 
     this.addChild(this.#camera);
     GameContext.getInstance().setActiveCamera(this.#camera);
@@ -64,20 +67,18 @@ export class Player extends CollisionBody {
 
   isGrounded(): boolean {
     const collidingBodies = this.#feetArea.getCollidingBodies();
-    let grounded = false;
 
-    collidingBodies.forEach((body) => {
+    for (const body of collidingBodies) {
       if (body instanceof StaticCollisionBody) {
-        grounded = true;
-        return;
+        return true;
       }
-    });
+    }
 
-    return grounded;
+    return false;
   }
 
-  #applyGravity(): void {
-    this.#velocity = this.#velocity.add(new Vector2D(0, gravity));
+  #applyGravity(delta: number): void {
+    this.#velocity = this.#velocity.add(new Vector2D(0, gravity * delta));
   }
 
   #wantToMoveLeft(): boolean {
@@ -88,62 +89,60 @@ export class Player extends CollisionBody {
     return GameContext.getInstance().isPressed('d');
   }
 
-  #moveLeft(): void {
-    this.#velocity = this.#velocity.add(new Vector2D(-this.#moveSpeed, 0));
+  #moveLeft(delta: number): void {
+    this.#velocity = this.#velocity.add(
+      new Vector2D(-this.#moveAcceleration * delta, 0)
+    );
   }
 
-  #moveRight(): void {
-    this.#velocity = this.#velocity.add(new Vector2D(this.#moveSpeed, 0));
+  #moveRight(delta: number): void {
+    this.#velocity = this.#velocity.add(
+      new Vector2D(this.#moveAcceleration * delta, 0)
+    );
   }
 
   #wantToJump(): boolean {
     return GameContext.getInstance().isJustPressed(' ');
   }
 
-  #jump(): void {
+  #jump(delta: number): void {
     this.#velocity = this.#velocity.add(new Vector2D(0, -this.#jumpForce));
   }
 
   #bumpedHead(): boolean {
     const collidingBodies = this.#headArea.getCollidingBodies();
-    let bumpedHead = false;
 
-    collidingBodies.forEach((body) => {
+    for (const body of collidingBodies) {
       if (body instanceof StaticCollisionBody) {
-        bumpedHead = true;
-        return;
+        return true;
       }
-    });
+    }
 
-    return bumpedHead;
+    return false;
   }
 
   #bumbedLeft(): boolean {
     const collidingBodies = this.#leftArea.getCollidingBodies();
-    let bumpedLeft = false;
 
-    collidingBodies.forEach((body) => {
+    for (const body of collidingBodies) {
       if (body instanceof StaticCollisionBody) {
-        bumpedLeft = true;
-        return;
+        return true;
       }
-    });
+    }
 
-    return bumpedLeft;
+    return false;
   }
 
   #bumpedRight(): boolean {
     const collidingBodies = this.#rightArea.getCollidingBodies();
-    let bumpedRight = false;
 
-    collidingBodies.forEach((body) => {
+    for (const body of collidingBodies) {
       if (body instanceof StaticCollisionBody) {
-        bumpedRight = true;
-        return;
+        return true;
       }
-    });
+    }
 
-    return bumpedRight;
+    return false;
   }
 
   override process(delta: number): void {
@@ -151,7 +150,7 @@ export class Player extends CollisionBody {
       this.#velocity = new Vector2D(this.#velocity.x, 0);
     }
     if (!this.isGrounded()) {
-      this.#applyGravity();
+      this.#applyGravity(delta);
     } else {
       this.#velocity = new Vector2D(this.#velocity.x, 0);
     }
@@ -165,15 +164,15 @@ export class Player extends CollisionBody {
     }
 
     if (this.#wantToMoveLeft()) {
-      this.#moveLeft();
+      this.#moveLeft(delta);
     }
 
     if (this.#wantToMoveRight()) {
-      this.#moveRight();
+      this.#moveRight(delta);
     }
 
     if (this.#wantToJump() && this.isGrounded()) {
-      this.#jump();
+      this.#jump(delta);
     }
 
     if (this.#velocity.y > maxFallSpeed) {
@@ -189,6 +188,7 @@ export class Player extends CollisionBody {
     }
 
     this.position = this.position.add(this.#velocity.multiply(delta));
+
     if (delta > 0) {
       const decayFactor = Math.exp(-Math.log(2) * delta);
       this.#velocity = new Vector2D(
