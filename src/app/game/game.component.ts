@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { GameContext, GameEngine } from 'jf-canvas-game-engine';
 import { Level1 } from './gameObjects/Level1';
+import { EndScene } from './gameObjects/EndScene';
 
 @Component({
   selector: 'app-game',
@@ -21,10 +22,12 @@ export class GameComponent {
   gameEngine!: GameEngine;
 
   ngAfterViewInit() {
+    GameContext.getInstance().setCanvasContext(
+      this.canvas.nativeElement.getContext('2d')!
+    );
     this.gameEngine = new GameEngine(this.canvas.nativeElement, new Level1(), {
       debug: true,
     });
-    GameContext.getInstance().setGameEngine(this.gameEngine);
   }
 
   ngOnDestroy() {

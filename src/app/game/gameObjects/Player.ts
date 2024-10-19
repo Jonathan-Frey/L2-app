@@ -159,7 +159,7 @@ export class Player extends CollisionBody {
       this.#scale = this.#scale.multiply(scaleFactor);
       this.#rotation += Math.PI * delta;
     } else if (this.hasWon) {
-      this.#velocity = new Vector2D(0, -1500);
+      this.#velocity = new Vector2D(0, -150);
       this.position = this.position.add(this.#velocity.multiply(delta));
     } else {
       if (this.#bumpedHead()) {
