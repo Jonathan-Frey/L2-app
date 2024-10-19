@@ -15,7 +15,6 @@ import { Platform } from './Platform';
 export class Player extends CollisionBody {
   #width = 50;
   #height = 50;
-  #color = 'green';
   #jumpForce = 1600;
   #moveAcceleration = 1000;
   #maxMoveSpeed = 500;
@@ -26,6 +25,10 @@ export class Player extends CollisionBody {
   #leftArea: Area;
   #rightArea: Area;
   #image: HTMLImageElement;
+  hasWon = false;
+  isBeingSucked = false;
+  #scale = new Vector2D(1, 1);
+  #rotation = 0;
   constructor(position: Vector2D) {
     super(
       position,
@@ -150,57 +153,67 @@ export class Player extends CollisionBody {
   }
 
   override process(delta: number): void {
-    if (this.#bumpedHead()) {
-      this.#velocity = new Vector2D(this.#velocity.x, 0);
-    }
-    if (!this.isGrounded()) {
-      this.#applyGravity(delta);
+    if (this.isBeingSucked) {
+      this.#velocity = new Vector2D(0, 0);
+      const scaleFactor = Math.exp(-Math.log(2) * delta);
+      this.#scale = this.#scale.multiply(scaleFactor);
+      this.#rotation += Math.PI * delta;
+    } else if (this.hasWon) {
+      this.#velocity = new Vector2D(0, -1500);
+      this.position = this.position.add(this.#velocity.multiply(delta));
     } else {
-      this.#velocity = new Vector2D(this.#velocity.x, 0);
-    }
+      if (this.#bumpedHead()) {
+        this.#velocity = new Vector2D(this.#velocity.x, 0);
+      }
+      if (!this.isGrounded()) {
+        this.#applyGravity(delta);
+      } else {
+        this.#velocity = new Vector2D(this.#velocity.x, 0);
+      }
 
-    if (this.#bumbedLeft() && this.#velocity.x < 0) {
-      this.#velocity = new Vector2D(0, this.#velocity.y);
-    }
-
-    if (this.#bumpedRight() && this.#velocity.x > 0) {
-      this.#velocity = new Vector2D(0, this.#velocity.y);
-    }
-
-    if (this.#wantToMoveLeft()) {
-      this.#moveLeft(delta);
-    }
-
-    if (this.#wantToMoveRight()) {
-      this.#moveRight(delta);
-    }
-
-    if (this.#wantToJump() && this.isGrounded()) {
-      this.#jump(delta);
-    }
-
-    if (this.#velocity.y > maxFallSpeed) {
-      this.#velocity = new Vector2D(this.#velocity.x, maxFallSpeed);
-    }
-
-    if (this.#velocity.x > this.#maxMoveSpeed) {
-      this.#velocity = new Vector2D(this.#maxMoveSpeed, this.#velocity.y);
-    }
-
-    if (this.#velocity.x < -this.#maxMoveSpeed) {
-      this.#velocity = new Vector2D(-this.#maxMoveSpeed, this.#velocity.y);
-    }
-
-    this.position = this.position.add(this.#velocity.multiply(delta));
-
-    if (delta > 0) {
-      const decayFactor = Math.exp(-Math.log(2) * delta);
-      this.#velocity = new Vector2D(
-        this.#velocity.x * decayFactor,
-        this.#velocity.y
-      );
-      if (Math.abs(this.#velocity.x) < 1) {
+      if (this.#bumbedLeft() && this.#velocity.x < 0) {
         this.#velocity = new Vector2D(0, this.#velocity.y);
+      }
+
+      if (this.#bumpedRight() && this.#velocity.x > 0) {
+        this.#velocity = new Vector2D(0, this.#velocity.y);
+      }
+
+      if (this.#wantToMoveLeft()) {
+        this.#moveLeft(delta);
+      }
+
+      if (this.#wantToMoveRight()) {
+        this.#moveRight(delta);
+      }
+
+      if (this.#wantToJump() && this.isGrounded()) {
+        this.#jump(delta);
+      }
+
+      if (this.#velocity.y > maxFallSpeed) {
+        this.#velocity = new Vector2D(this.#velocity.x, maxFallSpeed);
+      }
+
+      if (this.#velocity.x > this.#maxMoveSpeed) {
+        this.#velocity = new Vector2D(this.#maxMoveSpeed, this.#velocity.y);
+      }
+
+      if (this.#velocity.x < -this.#maxMoveSpeed) {
+        this.#velocity = new Vector2D(-this.#maxMoveSpeed, this.#velocity.y);
+      }
+
+      this.position = this.position.add(this.#velocity.multiply(delta));
+
+      if (delta > 0) {
+        const decayFactor = Math.exp(-Math.log(2) * delta);
+        this.#velocity = new Vector2D(
+          this.#velocity.x * decayFactor,
+          this.#velocity.y
+        );
+        if (Math.abs(this.#velocity.x) < 1) {
+          this.#velocity = new Vector2D(0, this.#velocity.y);
+        }
       }
     }
   }
@@ -209,13 +222,17 @@ export class Player extends CollisionBody {
     ctx.save();
 
     ctx.translate(this.position.x, this.position.y);
-
-    if (this.#wantToMoveRight()) {
-      ctx.scale(-1, 1);
-    } else if (this.#wantToMoveLeft()) {
-      ctx.scale(1, 1);
-    } else if (this.#velocity.x > 0) {
-      ctx.scale(-1, 1);
+    if (this.isBeingSucked) {
+      ctx.scale(this.#scale.x, this.#scale.y);
+      ctx.rotate(this.#rotation);
+    } else if (!this.hasWon) {
+      if (this.#wantToMoveRight()) {
+        ctx.scale(-1, 1);
+      } else if (this.#wantToMoveLeft()) {
+        ctx.scale(1, 1);
+      } else if (this.#velocity.x > 0) {
+        ctx.scale(-1, 1);
+      }
     }
 
     ctx.drawImage(this.#image, -this.#width / 2, -this.#height / 2);

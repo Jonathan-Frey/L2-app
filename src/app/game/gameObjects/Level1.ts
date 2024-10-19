@@ -1,18 +1,25 @@
-import { GameObject, Vector2D } from 'jf-canvas-game-engine';
+import {
+  Area,
+  GameObject,
+  RectangleCollisionShape,
+  Vector2D,
+} from 'jf-canvas-game-engine';
 import { Player } from './Player';
 import { Platform } from './Platform';
 import { DebugCamera } from './DebugCamera';
 import { DisappearingPlatform } from './DisappearingPlatform';
 import { FakePlatform } from './FakePlatform';
+import { FinishLine } from './FinishLine';
+import { EndMessage } from './EndMessage';
+import { EndBlackHole } from './EndBlackHole';
 
 export class Level1 extends GameObject {
-  #player = new Player(new Vector2D(-25, -6000));
+  #player = new Player(new Vector2D(450, -6100));
+  #skyImage = document.createElement('img');
   constructor() {
     super(new Vector2D(0, 0));
     const iceBlue = 'rgb(32 195 208 / 20%)';
-
-    // this.addChild(new DebugCamera(new Vector2D(0, 0)));
-    this.addChild(this.#player);
+    this.#skyImage.src = 'stars.jpg';
 
     // outer walls
     this.addChild(new Platform(new Vector2D(-62.5, -3000), 25, 6025, iceBlue));
@@ -178,6 +185,36 @@ export class Level1 extends GameObject {
     this.addChild(new FakePlatform(new Vector2D(1050, -6100), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(1450, -6100), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(1850, -6100), 50, 25, iceBlue));
+
+    this.addChild(new FinishLine(new Vector2D(1000, -6300), 2000, 25));
+    const endMessages = [
+      'You made it... The ice beneath you fades into a distant memory.',
+      'Higher than you ever imagined. The Earth seems so small now...',
+      'What lies beyond? Stars twinkle all around, welcoming you to the unknown.',
+      'There is no more ice. The vastness of space stretches infinitely before you.',
+      'No more slipping. No more falling. For the first time, you’re weightless.',
+      'You were always meant to fly. The stars draw closer. Is this freedom?',
+      'Further. Always further. The cosmos unfolds like a map, with no edges to be found.',
+      'Are you alone? Space is vast, but somehow, it doesn’t feel empty.',
+      'You are weightless, but not lost. The void cradles you, gently pushing you deeper.',
+      'This is not the end. The journey has only just begun.',
+      'Where do you go from here? Upward, ever upward.',
+      'There are no limits. The stars shimmer, their light feels like a guide.',
+      'Is this freedom, or something else? The vast expanse is beautiful, but unfamiliar.',
+      'In the end, did it matter? You’ve conquered the climb, but what have you gained?',
+      'The higher you go, the smaller it all seems. The ground below fades completely from view.',
+      'Perhaps this was always the goal... You can’t fall if there is no ground.',
+      'It was never about reaching the top. The stars welcome you as one of their own.',
+      "It's about letting go. Let the universe carry you now.",
+      'Drift. Float. Fly. No more obstacles, only endless horizons.',
+      'There is no end. The journey is eternal. You are free.',
+    ];
+
+    this.addChild(new EndMessage(new Vector2D(250, -6600), endMessages));
+
+    this.addChild(new EndBlackHole(new Vector2D(250, -27000)));
+
+    this.addChild(this.#player);
   }
 
   override render(ctx: CanvasRenderingContext2D): void {
@@ -187,5 +224,10 @@ export class Level1 extends GameObject {
     gradient.addColorStop(0.8, 'black');
     ctx.fillStyle = gradient;
     ctx.fillRect(-1500, 500, 5000, -8000);
+    const pattern = ctx.createPattern(this.#skyImage, 'repeat');
+    if (pattern) {
+      ctx.fillStyle = pattern;
+      ctx.fillRect(-1500, -7000, 5000, -21000);
+    }
   }
 }
