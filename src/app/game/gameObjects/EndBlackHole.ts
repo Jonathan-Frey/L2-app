@@ -14,6 +14,7 @@ export class EndBlackHole extends GameObject {
   constructor(position: Vector2D) {
     super(position);
     this.#setUpImage();
+    this.#setUpArea();
   }
 
   #setUpImage() {
