@@ -7,9 +7,13 @@ import {
 import { Player } from './Player';
 
 export class FinishLine extends GameObject {
-  #area: Area;
+  #area!: Area;
   constructor(position: Vector2D, width: number, height: number) {
     super(position);
+    this.#setUpArea(width, height);
+  }
+
+  #setUpArea(width: number, height: number): void {
     this.#area = new Area(
       new Vector2D(0, 0),
       new RectangleCollisionShape(
@@ -21,13 +25,21 @@ export class FinishLine extends GameObject {
     this.addChild(this.#area);
   }
 
-  override process(delta: number): void {
+  #handleBodyEntered(): void {
     const collidingBodies = this.#area.getCollidingBodies();
     for (const body of collidingBodies) {
       if (body instanceof Player) {
-        body.hasWon = true;
+        this.#setPlayerHasWon(body);
         return;
       }
     }
+  }
+
+  #setPlayerHasWon(player: Player): void {
+    player.hasWon = true;
+  }
+
+  override process(delta: number): void {
+    this.#handleBodyEntered();
   }
 }

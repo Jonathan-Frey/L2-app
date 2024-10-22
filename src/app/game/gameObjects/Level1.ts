@@ -12,27 +12,61 @@ import { FakePlatform } from './FakePlatform';
 import { FinishLine } from './FinishLine';
 import { EndMessage } from './EndMessage';
 import { EndBlackHole } from './EndBlackHole';
+import { iceBlue } from './globalValues';
 
 export class Level1 extends GameObject {
   #player = new Player(new Vector2D(450, -6100));
   #skyImage = document.createElement('img');
+
   constructor() {
     super(new Vector2D(0, 0));
-    const iceBlue = 'rgb(32 195 208 / 20%)';
     this.#skyImage.src = 'stars.jpg';
 
-    // outer walls
+    this.#addGameObjects();
+  }
+
+  /**
+   * Adds all the needed game objects to the level.
+   */
+  #addGameObjects() {
+    this.#addWalls();
+    this.#addBottomFloor();
+    this.#addFirstStairs();
+    this.#addSmallJumps();
+    this.#addSpikeClimb();
+    this.#addZigZagPath();
+    this.#addThinPath();
+    this.#addBridge();
+    this.#addFakePlatformPath();
+    this.#addFinishLine();
+    this.#addEndMessage();
+    this.#addBlackHole();
+    this.#addPlayer();
+  }
+
+  /**
+   * Adds the walls to the level.
+   */
+  #addWalls(): void {
     this.addChild(new Platform(new Vector2D(-62.5, -3000), 25, 6025, iceBlue));
     this.addChild(new Platform(new Vector2D(12.5, -3037.5), 25, 5950, iceBlue));
     this.addChild(
       new Platform(new Vector2D(1987.5, -3012.5), 25, 6000, iceBlue)
     );
+  }
 
-    // bottom floor
+  /**
+   * Adds the bottom floor to the level.
+   */
+  #addBottomFloor(): void {
     this.addChild(new Platform(new Vector2D(-25, 0), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1000, 0), 2000, 25, iceBlue));
+  }
 
-    // first stairs
+  /**
+   * Adds the first stairs to the level.
+   */
+  #addFirstStairs(): void {
     this.addChild(new Platform(new Vector2D(150, -100), 100, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(300, -200), 100, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(500, -300), 100, 25, iceBlue));
@@ -40,8 +74,13 @@ export class Level1 extends GameObject {
     this.addChild(new Platform(new Vector2D(1050, -500), 100, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1400, -600), 100, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1500, -750), 100, 25, iceBlue));
+  }
 
-    // right resting place
+  /**
+   * Adds the small jumps to the level.
+   */
+  #addSmallJumps(): void {
+    // right wide platform
     this.addChild(new Platform(new Vector2D(1800, -900), 350, 25, iceBlue));
 
     // small jumps
@@ -51,23 +90,34 @@ export class Level1 extends GameObject {
     this.addChild(new Platform(new Vector2D(800, -900), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(600, -900), 50, 25, iceBlue));
 
-    // left resting place
+    // left wide platform
     this.addChild(new Platform(new Vector2D(200, -900), 350, 25, iceBlue));
+  }
 
+  /**
+   * Adds the spike climb to the level.
+   */
+  #addSpikeClimb(): void {
     // runway
     this.addChild(new Platform(new Vector2D(187.5, -1100), 325, 25, iceBlue));
 
-    // runway target platform
+    // platform between runway and spike wall
     this.addChild(new Platform(new Vector2D(550, -1250), 50, 25, iceBlue));
 
-    // left large box with small protrusions
+    // spike wall
     this.addChild(new Platform(new Vector2D(175, -1662.5), 300, 1000, iceBlue));
+
+    // spikes
     this.addChild(new Platform(new Vector2D(350, -1425), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(350, -1625), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(350, -1825), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(350, -2025), 50, 25, iceBlue));
+  }
 
-    // left path: right right left platforms
+  /**
+   * Adds the zigzag path to the level.
+   */
+  #addZigZagPath(): void {
     this.addChild(new Platform(new Vector2D(600, -2150), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(800, -2350), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(600, -2550), 50, 25, iceBlue));
@@ -80,8 +130,12 @@ export class Level1 extends GameObject {
     this.addChild(new Platform(new Vector2D(1200, -3950), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1400, -4150), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1600, -4350), 50, 25, iceBlue));
+  }
 
-    // right path
+  /**
+   * Adds the thin path to the level.
+   */
+  #addThinPath(): void {
     this.addChild(new Platform(new Vector2D(1050, -2325), 150, 75, iceBlue));
     this.addChild(
       new Platform(new Vector2D(1231.25, -2337.5), 12.5, 50, iceBlue)
@@ -116,7 +170,12 @@ export class Level1 extends GameObject {
     this.addChild(
       new Platform(new Vector2D(1731.25, -4337.5), 12.5, 50, iceBlue)
     );
+  }
 
+  /**
+   * Adds the bridge to the level.
+   */
+  #addBridge(): void {
     // right resting place
     this.addChild(new Platform(new Vector2D(1887.5, -4500), 175, 50, iceBlue));
 
@@ -152,41 +211,58 @@ export class Level1 extends GameObject {
     this.addChild(new Platform(new Vector2D(350, -4912.5), 100, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(250, -4912.5), 100, 25, iceBlue));
 
-    // left resting space
-    this.addChild(new Platform(new Vector2D(112.5, -4900), 175, 50, iceBlue));
-
     // left square stairs
+    this.addChild(new Platform(new Vector2D(112.5, -4900), 175, 50, iceBlue));
     this.addChild(new Platform(new Vector2D(50, -5000), 50, 50, iceBlue));
     this.addChild(new Platform(new Vector2D(150, -5100), 50, 50, iceBlue));
     this.addChild(new Platform(new Vector2D(50, -5200), 50, 50, iceBlue));
     this.addChild(new Platform(new Vector2D(150, -5300), 50, 50, iceBlue));
+  }
 
-    // stairs
+  /**
+   * Adds the fake platform path to the level.
+   */
+  #addFakePlatformPath(): void {
+    // stairs leading up to the fake platforms
     this.addChild(new Platform(new Vector2D(300, -5350), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(550, -5400), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(800, -5450), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1050, -5500), 50, 25, iceBlue));
 
-    // split choice fake platforms
+    // first row
     this.addChild(new FakePlatform(new Vector2D(850, -5650), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1250, -5650), 50, 25, iceBlue));
 
+    // second row
     this.addChild(new Platform(new Vector2D(650, -5800), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1050, -5800), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1450, -5800), 50, 25, iceBlue));
 
+    // third row
     this.addChild(new Platform(new Vector2D(450, -5950), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(850, -5950), 50, 25, iceBlue));
     this.addChild(new Platform(new Vector2D(1250, -5950), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(1650, -5950), 50, 25, iceBlue));
 
+    // fourth and last row
     this.addChild(new Platform(new Vector2D(250, -6100), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(650, -6100), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(1050, -6100), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(1450, -6100), 50, 25, iceBlue));
     this.addChild(new FakePlatform(new Vector2D(1850, -6100), 50, 25, iceBlue));
+  }
 
+  /**
+   * Adds the finish line area to the level.
+   */
+  #addFinishLine(): void {
     this.addChild(new FinishLine(new Vector2D(1000, -6300), 2000, 25));
+  }
+
+  /**
+   * Adds the end message to the level.
+   */
+  #addEndMessage(): void {
     const endMessages = [
       'You made it... The ice beneath you fades into a distant memory.',
       'Higher than you ever imagined. The Earth seems so small now...',
@@ -211,9 +287,19 @@ export class Level1 extends GameObject {
     ];
 
     this.addChild(new EndMessage(new Vector2D(250, -6600), endMessages));
+  }
 
+  /**
+   * Adds the black hole to the level.
+   */
+  #addBlackHole(): void {
     this.addChild(new EndBlackHole(new Vector2D(250, -27000)));
+  }
 
+  /**
+   * Adds the player to the level.
+   */
+  #addPlayer(): void {
     this.addChild(this.#player);
   }
 

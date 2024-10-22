@@ -13,16 +13,24 @@ export class EndMessage extends GameObject {
     this.#lines = lines;
   }
 
-  override render(ctx: CanvasRenderingContext2D) {
+  #drawTextLines(ctx: CanvasRenderingContext2D) {
     ctx.font = `${this.#fontSize}px ${this.#font}`;
     ctx.fillStyle = this.#fillStyle;
     ctx.textAlign = this.#textAlign;
     for (let i = 0; i < this.#lines.length; i++) {
-      ctx.fillText(
+      this.#drawTextLine(
+        ctx,
         this.#lines[i],
-        this.position.x,
         this.position.y - i * this.#spacing
       );
     }
+  }
+
+  #drawTextLine(ctx: CanvasRenderingContext2D, text: string, y: number) {
+    ctx.fillText(text, this.position.x, y);
+  }
+
+  override render(ctx: CanvasRenderingContext2D) {
+    this.#drawTextLines(ctx);
   }
 }

@@ -11,14 +11,54 @@ export class DebugCamera extends Camera {
     GameContext.getInstance().setActiveCamera(this);
   }
 
+  #handleUserInitiatedMovement(): void {
+    if (this.#wantToMoveUp()) {
+      this.#moveUp();
+    }
+    if (this.#wantToMoveDown()) {
+      this.#moveDown();
+    }
+    if (this.#wantToMoveLeft()) {
+      this.#moveLeft();
+    }
+    if (this.#wantToMoveRight()) {
+      this.#moveRight();
+    }
+  }
+
+  #wantToMoveUp(): boolean {
+    return GameContext.getInstance().isPressed('w');
+  }
+
+  #moveUp(): void {
+    this.position = this.position.add(new Vector2D(0, -10));
+  }
+
+  #wantToMoveDown(): boolean {
+    return GameContext.getInstance().isPressed('s');
+  }
+
+  #moveDown(): void {
+    this.position = this.position.add(new Vector2D(0, 10));
+  }
+
+  #wantToMoveLeft(): boolean {
+    return GameContext.getInstance().isPressed('a');
+  }
+
+  #moveLeft(): void {
+    this.position = this.position.add(new Vector2D(-10, 0));
+  }
+
+  #wantToMoveRight(): boolean {
+    return GameContext.getInstance().isPressed('d');
+  }
+
+  #moveRight(): void {
+    this.position = this.position.add(new Vector2D(10, 0));
+  }
+
   override process(delta: number): void {
-    GameContext.getInstance().isPressed('w') &&
-      (this.position = this.position.add(new Vector2D(0, -10)));
-    GameContext.getInstance().isPressed('s') &&
-      (this.position = this.position.add(new Vector2D(0, 10)));
-    GameContext.getInstance().isPressed('a') &&
-      (this.position = this.position.add(new Vector2D(-10, 0)));
-    GameContext.getInstance().isPressed('d') &&
-      (this.position = this.position.add(new Vector2D(10, 0)));
+    this.#handleUserInitiatedMovement();
   }
 }

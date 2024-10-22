@@ -8,7 +8,7 @@ import { Platform } from './Platform';
 import { Player } from './Player';
 
 export class DisappearingPlatform extends Platform {
-  #topArea: Area;
+  #topArea!: Area;
   constructor(
     position: Vector2D,
     width: number,
@@ -16,9 +16,11 @@ export class DisappearingPlatform extends Platform {
     color: string | CanvasGradient | CanvasPattern
   ) {
     super(position, width, height, color);
-    const collisionLayers = new CollisionLayers();
-    collisionLayers.setLayer(1, false);
-    collisionLayers.setLayer(2, true);
+    this.#setUpArea(width, height);
+  }
+
+  #setUpArea(width: number, height: number): void {
+    const collisionLayers = this.#setUpAreaCollisionLayers();
     this.#topArea = new Area(
       new Vector2D(0, -(height / 2)),
       new RectangleCollisionShape(
@@ -29,6 +31,13 @@ export class DisappearingPlatform extends Platform {
       collisionLayers
     );
     this.addChild(this.#topArea);
+  }
+
+  #setUpAreaCollisionLayers(): CollisionLayers {
+    const collisionLayers = new CollisionLayers();
+    collisionLayers.setLayer(1, false);
+    collisionLayers.setLayer(2, true);
+    return collisionLayers;
   }
 
   #isPlayerOnPlatform(): boolean {
