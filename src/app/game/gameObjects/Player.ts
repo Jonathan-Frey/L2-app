@@ -10,7 +10,6 @@ import {
 } from 'jf-canvas-game-engine';
 
 import { gravity, maxFallSpeed } from './globalValues';
-import { Platform } from './Platform';
 
 export class Player extends CollisionBody {
   #width = 50;
