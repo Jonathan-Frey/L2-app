@@ -7,14 +7,33 @@ import { EndScene } from './gameObjects/EndScene';
   selector: 'app-game',
   standalone: true,
   template: ` <style>
+      .gameWrapper {
+        position: relative;
+      }
+
       canvas {
         border: 1px solid black;
         background-color: gray;
         height: 80dvh;
       }
+
+      button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 32px;
+        padding: 8px 32px;
+        border-radius: 16px;
+        background: black;
+        color: white;
+        border: none;
+      }
     </style>
-    <canvas #canvas width="1280" height="720"></canvas>
-    <button (click)="startGame($event)">Start</button>`,
+    <div class="gameWrapper">
+      <canvas #canvas width="1280" height="720"></canvas>
+      <button (click)="startGame($event)">Start Game</button>
+    </div>`,
 })
 export class GameComponent {
   @ViewChild('canvas')
